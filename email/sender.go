@@ -87,6 +87,7 @@ func (s *SMTPSender) Send(ctx context.Context, reply *Reply) error {
 		return fmt.Errorf("failed to dial SMTP server %s: %w", addr, err)
 	}
 	defer conn.Close()
+	_ = conn.SetDeadline(time.Now().Add(25 * time.Second))
 
 	// Wrap in smtp.Client
 	c, err := smtp.NewClient(conn, s.cfg.SMTPHost)

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net"
 	"sort"
 	"strings"
 	"sync"
@@ -63,10 +64,22 @@ func (r *IMAPReader) connectLocked(ctx context.Context) error {
 		MinVersion: tls.VersionTLS12,
 	}
 
-	c, err := client.DialTLS(addr, tlsConfig)
+	dialer := &net.Dialer{
+		Timeout: 10 * time.Second,
+	}
+	tlsConn, err := tls.DialWithDialer(dialer, "tcp", addr, tlsConfig)
 	if err != nil {
 		return fmt.Errorf("failed to connect to IMAP server %s: %w", addr, err)
 	}
+
+	c, err := client.New(tlsConn)
+	if err != nil {
+		_ = tlsConn.Close()
+		return fmt.Errorf("failed to create IMAP client: %w", err)
+	}
+
+	// Hard command timeout so broken or dropped sockets immediately fail within seconds rather than 15 minutes
+	c.Timeout = 10 * time.Second
 
 	// Silence internal background transport error logs (e.g. idle socket disconnects)
 	c.ErrorLog = log.New(io.Discard, "", 0)
@@ -99,6 +112,7 @@ func (r *IMAPReader) ensureConnected(ctx context.Context) error {
 	if err := r.client.Noop(); err != nil {
 		return r.connectLocked(ctx)
 	}
+	r.lastActive = time.Now()
 	return nil
 }
 

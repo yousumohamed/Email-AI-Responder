@@ -1,0 +1,16 @@
+.env
+.env.*
+!.env.example
+
+bin/
+dist/
+*.exe
+
+*.log
+*.db
+*.sqlite
+
+.idea/
+.vscode/
+
+.DS_Store

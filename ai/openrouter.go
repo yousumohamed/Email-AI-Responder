@@ -172,7 +172,14 @@ func (c *OpenRouterClient) GenerateReply(ctx context.Context, sender, subject, e
 		return "", errors.New("OpenRouter returned empty choices array")
 	}
 
-	replyText := strings.TrimSpace(chatResp.Choices[0].Message.Content)
+	msgChoice := chatResp.Choices[0].Message
+	replyText := strings.TrimSpace(msgChoice.Content)
+	if replyText == "" {
+		replyText = strings.TrimSpace(msgChoice.ReasoningContent)
+		if replyText == "" {
+			replyText = strings.TrimSpace(msgChoice.Reasoning)
+		}
+	}
 	if replyText == "" {
 		return "", errors.New("OpenRouter returned an empty message content")
 	}

@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"fmt"
 	"io"
+	"log"
 	"sort"
 	"strings"
 	"sync"
@@ -67,6 +68,9 @@ func (r *IMAPReader) connectLocked(ctx context.Context) error {
 		return fmt.Errorf("failed to connect to IMAP server %s: %w", addr, err)
 	}
 
+	// Silence internal background transport error logs (e.g. idle socket disconnects)
+	c.ErrorLog = log.New(io.Discard, "", 0)
+
 	// Login using Gmail address and App Password
 	if err := c.Login(r.cfg.GmailEmail, r.cfg.GmailAppPassword); err != nil {
 		_ = c.Close()
@@ -89,6 +93,10 @@ func (r *IMAPReader) connectLocked(ctx context.Context) error {
 // ensureConnected verifies client state or reconnects.
 func (r *IMAPReader) ensureConnected(ctx context.Context) error {
 	if r.client == nil || r.client.State() != imap.SelectedState {
+		return r.connectLocked(ctx)
+	}
+	// Ping connection with Noop to detect and recover from idle socket drops
+	if err := r.client.Noop(); err != nil {
 		return r.connectLocked(ctx)
 	}
 	return nil

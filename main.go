@@ -337,47 +337,49 @@ func (a *App) processSingleEmail(ctx context.Context, msg *email.Message) {
 		Date:       time.Now(),
 	}
 
-	// 7. Sending decision: Automated Send vs. Interactive Approval vs. Preview Mode
+	// 7. Display generated email reply in terminal
+	fmt.Println("==============================")
+	if a.cfg.CanAutoSend() {
+		fmt.Println("GENERATED EMAIL REPLY (AUTO-SEND)")
+	} else {
+		fmt.Println("PROPOSED EMAIL REPLY")
+	}
+	fmt.Println("==============================")
+	fmt.Printf("To: %s\n", reply.To)
+	fmt.Printf("Subject: %s\n\n", reply.Subject)
+	fmt.Println(reply.Body)
+	fmt.Println("==============================")
+
+	// 8. Sending decision: Automated Send vs. Interactive Approval vs. Preview Mode
 	shouldSend := false
 	if a.cfg.CanAutoSend() {
-		// Production Mode: fully automated sending
+		// Fully automated sending
 		shouldSend = true
-	} else {
-		// Display proposed reply
-		fmt.Println("==============================")
-		fmt.Println("PROPOSED EMAIL REPLY")
-		fmt.Println("==============================")
-		fmt.Printf("To: %s\n", reply.To)
-		fmt.Printf("Subject: %s\n\n", reply.Subject)
-		fmt.Println(reply.Body)
-		fmt.Println("==============================")
-
-		if a.cfg.RequireApproval {
-			fmt.Print("Approve and send this reply via Gmail SMTP now? [y/N]: ")
-			reader := bufio.NewReader(os.Stdin)
-			input, _ := reader.ReadString('\n')
-			input = strings.TrimSpace(strings.ToLower(input))
-			if input == "y" || input == "yes" {
-				shouldSend = true
-			} else {
-				fmt.Println("Sending skipped.")
-				a.logger.Info("Reply skipped by user approval")
-				a.sessionMu.Lock()
-				a.sessionSeen[msg.ID] = true
-				a.sessionMu.Unlock()
-				_ = a.storage.Record(ctx, msg.ID, msg.From, msg.Subject, "processed")
-				return
-			}
+	} else if a.cfg.RequireApproval {
+		fmt.Print("Approve and send this reply via Gmail SMTP now? [y/N]: ")
+		reader := bufio.NewReader(os.Stdin)
+		input, _ := reader.ReadString('\n')
+		input = strings.TrimSpace(strings.ToLower(input))
+		if input == "y" || input == "yes" {
+			shouldSend = true
 		} else {
-			fmt.Println("Sending disabled.")
-			a.logger.Info("Auto reply disabled")
-			a.logger.Info("Reply NOT sent")
+			fmt.Println("Sending skipped.")
+			a.logger.Info("Reply skipped by user approval")
 			a.sessionMu.Lock()
 			a.sessionSeen[msg.ID] = true
 			a.sessionMu.Unlock()
 			_ = a.storage.Record(ctx, msg.ID, msg.From, msg.Subject, "processed")
 			return
 		}
+	} else {
+		fmt.Println("Sending disabled.")
+		a.logger.Info("Auto reply disabled")
+		a.logger.Info("Reply NOT sent")
+		a.sessionMu.Lock()
+		a.sessionSeen[msg.ID] = true
+		a.sessionMu.Unlock()
+		_ = a.storage.Record(ctx, msg.ID, msg.From, msg.Subject, "processed")
+		return
 	}
 
 	if shouldSend {

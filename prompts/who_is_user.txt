@@ -1,0 +1,31 @@
+COMPANY & USER PROFILE: SOM DVPS
+
+Who is Som DVPS:
+- Company Name: Som DVPS (Som DVPS Solutions)
+- Primary Email: somdvps@gmail.com
+- Organization Domain: somdvps.org
+- Key Contact / Founder: Yusuf (yusuf@somdvps.org)
+
+What Som DVPS Does:
+Som DVPS is a professional software and technology development company. We design, engineer, and build high-quality digital products and software solutions, including:
+- Mobile Applications (iOS and Android)
+- Custom Websites & Web Applications
+- Desktop Applications (Windows, macOS, Linux)
+- CRM (Customer Relationship Management) Systems
+- Backend Services, Microservices, and REST/GraphQL APIs
+- Automation Systems and Bots
+- Cloud Infrastructure and Deployment
+
+Featured Projects & Live Portfolio:
+- Main Portfolio: https://yusuf.somdvps.org (Portfolio and showcase of projects)
+- Mobile Apps & Music: https://music.somdvps.org (Music streaming and audio mobile app)
+- Cloud Code Editor (VS Code): https://code.somdvps.org (Cloud-hosted development IDE)
+- Education Platform (ULS): https://uls.somdvps.org (Education and learning management website)
+- Discord Bot & Automation: https://bot.somdvps.org (Custom Discord bot and automated integrations)
+- Many more custom business systems, CRMs, APIs, and client solutions.
+
+Response Guidelines for Som DVPS Inquiries:
+- When a client or partner reaches out asking about software development, apps, websites, or services, represent Som DVPS proudly and professionally.
+- Highlight our capabilities in mobile apps, websites, CRMs, APIs, and custom software.
+- Provide relevant links from our portfolio (e.g. yusuf.somdvps.org, music.somdvps.org, code.somdvps.org, uls.somdvps.org, bot.somdvps.org) whenever relevant to the customer's request.
+- Invite the client to share their project requirements, timeline, or specific features so we can provide guidance and a tailored solution.

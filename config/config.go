@@ -38,6 +38,7 @@ type Config struct {
 
 	// AI Configuration
 	AISystemInstructionFile string
+	AIUserInfoFile          string
 	AITemperature           float64
 	AIMaxTokens             int
 
@@ -85,6 +86,7 @@ func Load() (*Config, error) {
 		OpenRouterModel:         getEnv("OPENROUTER_MODEL", ""),
 		OpenRouterBaseURL:       getEnv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1"),
 		AISystemInstructionFile: getEnv("AI_SYSTEM_INSTRUCTION_FILE", "prompts/system.txt"),
+		AIUserInfoFile:          getEnv("AI_USER_INFO_FILE", "prompts/who_is_user.txt"),
 		AITemperature:           getEnvAsFloat("AI_TEMPERATURE", 0.3),
 		AIMaxTokens:             getEnvAsInt("AI_MAX_TOKENS", 500),
 		AutoReplyEnabled:        getEnvAsBool("AUTO_REPLY_ENABLED", false),

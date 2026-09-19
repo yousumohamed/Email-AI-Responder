@@ -61,6 +61,10 @@ type OpenRouterClient struct {
 // NewOpenRouterClient initializes an OpenRouter API client.
 func NewOpenRouterClient(cfg *config.Config) (*OpenRouterClient, error) {
 	promptContent := loadSystemPrompt(cfg.AISystemInstructionFile)
+	userInfo := loadUserInfo(cfg.AIUserInfoFile)
+	if userInfo != "" {
+		promptContent += "\n\nCOMPANY & SENDER CONTEXT (WHO WE ARE):\n" + userInfo
+	}
 
 	return &OpenRouterClient{
 		cfg: cfg,
@@ -69,6 +73,20 @@ func NewOpenRouterClient(cfg *config.Config) (*OpenRouterClient, error) {
 		},
 		systemPrompt: promptContent,
 	}, nil
+}
+
+// loadUserInfo reads the user/company knowledge base file if available.
+func loadUserInfo(filePath string) string {
+	if filePath != "" {
+		data, err := os.ReadFile(filePath)
+		if err == nil && len(strings.TrimSpace(string(data))) > 0 {
+			return strings.TrimSpace(string(data))
+		}
+	}
+	if data, err := os.ReadFile("prompts/who_is_user.txt"); err == nil && len(strings.TrimSpace(string(data))) > 0 {
+		return strings.TrimSpace(string(data))
+	}
+	return ""
 }
 
 // loadSystemPrompt reads the system instruction file or falls back to DefaultSystemPrompt.
